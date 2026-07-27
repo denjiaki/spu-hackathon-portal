@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  /* SPU brand palette (Appendix A — spu.edu/style-guide) */
+  --color-maroon-50: #faf3f5;
+  --color-maroon-100: #f2dfe5;
+  --color-maroon-200: #e3bcc7;
+  --color-maroon-300: #cd8fa0;
+  --color-maroon-400: #b06079;
+  --color-maroon-500: #92405c;
+  --color-maroon-600: #7a2d47;
+  --color-maroon-700: #651d32; /* Legacy Maroon */
+  --color-maroon-800: #521628;
+  --color-maroon-900: #3e101e;
+  --color-falcon: #ba202e; /* Falcon Red */
+  --color-sand: #c7af7f;   /* PMS 7501 */
+  --color-cream: #f7f3ea;
+  --color-ink: #3e2b2e;    /* PMS Black 5 */
+
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background-color: var(--color-cream);
+}
