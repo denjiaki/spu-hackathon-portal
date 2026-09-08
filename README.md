@@ -23,6 +23,7 @@ Open http://localhost:5173.
 | Judge       | judge1@spu.edu      | judge123  | Route partly completed (seeded)    |
 | Judge       | judge2@spu.edu      | judge123  | Route just started                 |
 | Judge       | judge3@spu.edu      | judge123  | Fresh route                        |
+| Volunteer   | volunteer@spu.edu   | helper123 | Check-in station access only       |
 | Participant | participant@spu.edu | demo1234  | On team "TransitPulse", table 1    |
 
 Re-run `npm run seed` any time to reset to this state (do it right before the presentation).
@@ -43,8 +44,13 @@ Re-run `npm run seed` any time to reset to this state (do it right before the pr
 
 ## What's implemented (vs. spec)
 
-- **RBAC** — participant / judge / admin roles, enforced server-side on every route and
-  mirrored in the UI (admin/judge components are never mounted for participants).
+- **RBAC** — participant / judge / volunteer / admin roles, enforced server-side on every
+  route and mirrored in the UI (admin/judge components are never mounted for participants).
+  Volunteers get exactly one power: running check-in stations. Admins assign roles on the
+  Users page.
+- **Rubric confidentiality** — point values are not student-facing: the rubric API requires
+  a judge/admin session, and the public landing page describes the judging format without
+  disclosing weights. Teams see the full breakdown only in their published score sheets.
 - **Full database layout from §3.2** — projects, schedule, event check-ins, table locations,
   judging routes, route check-ins, scores & feedback (+ announcements and settings).
 - **All API routes from §3.3** — plus a few practical additions (announcements, table CRUD,

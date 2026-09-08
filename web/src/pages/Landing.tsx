@@ -4,16 +4,14 @@ import { api } from "../api";
 import { useAuth } from "../auth";
 import { Wordmark } from "../components/Layout";
 import { Badge, Card, CardBody, formatDay, formatTime } from "../components/ui";
-import type { RubricCriterion, ScheduleEvent } from "../types";
+import type { ScheduleEvent } from "../types";
 
 export default function Landing() {
   const { user } = useAuth();
   const [events, setEvents] = useState<ScheduleEvent[]>([]);
-  const [rubric, setRubric] = useState<RubricCriterion[]>([]);
 
   useEffect(() => {
     api<ScheduleEvent[]>("/schedule").then(setEvents).catch(() => {});
-    api<RubricCriterion[]>("/rubric").then(setRubric).catch(() => {});
   }, []);
 
   const days = new Map<string, ScheduleEvent[]>();
@@ -107,22 +105,13 @@ export default function Landing() {
 
       <section className="bg-maroon-700 py-12">
         <div className="mx-auto max-w-6xl px-4">
-          <h2 className="font-display text-3xl font-bold text-white">How you'll be judged</h2>
+          <h2 className="font-display text-3xl font-bold text-white">How judging works</h2>
           <p className="mt-2 max-w-2xl text-sm text-maroon-100">
-            Rotating judges of faculty, industry professionals, and student leaders score every
-            team out of 50 points. 7-minute pitch, 3-minute Q&A.
+            Open-floor presentations judged by rotating panels of faculty, industry
+            professionals, and student leaders: a 7-minute pitch followed by a 3-minute Q&A.
+            Every team receives their written score sheets and feedback after the awards
+            ceremony, right here in the portal.
           </p>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {rubric.map((criterion) => (
-              <div key={criterion.id} className="rounded-lg bg-white/10 p-4">
-                <div className="flex items-center justify-between">
-                  <p className="font-semibold text-white">{criterion.label}</p>
-                  <span className="rounded-full bg-sand px-2 py-0.5 text-xs font-bold text-ink">{criterion.max} pts</span>
-                </div>
-                <p className="mt-1 text-xs leading-relaxed text-maroon-100">{criterion.description}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 

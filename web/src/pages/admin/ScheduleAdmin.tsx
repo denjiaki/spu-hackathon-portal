@@ -71,15 +71,14 @@ export default function ScheduleAdmin() {
                 <Label htmlFor="ev-loc">Location</Label>
                 <Input id="ev-loc" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label htmlFor="ev-start">Starts</Label>
-                  <Input id="ev-start" type="datetime-local" required value={form.startTime} onChange={(e) => setForm({ ...form, startTime: e.target.value })} />
-                </div>
-                <div>
-                  <Label htmlFor="ev-end">Ends</Label>
-                  <Input id="ev-end" type="datetime-local" value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} />
-                </div>
+              {/* Full-width rows: side-by-side datetime-local inputs clip the date once a time is set */}
+              <div>
+                <Label htmlFor="ev-start">Starts</Label>
+                <Input id="ev-start" type="datetime-local" required value={form.startTime} onChange={(e) => setForm({ ...form, startTime: e.target.value })} />
+              </div>
+              <div>
+                <Label htmlFor="ev-end">Ends</Label>
+                <Input id="ev-end" type="datetime-local" value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} />
               </div>
               <ErrorNote message={error} />
               <div className="flex gap-2">

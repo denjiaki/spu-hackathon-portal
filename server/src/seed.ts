@@ -37,6 +37,7 @@ export async function runSeed() {
     addUser("judge2@spu.edu", "Marcus Boone (Sponsor)", "judge", "judge123"),
     addUser("judge3@spu.edu", "Sarah Ellison '24", "judge", "judge123"),
   ];
+  addUser("volunteer@spu.edu", "Riley Nakamura", "volunteer", "helper123");
   // One account per fixture team member so DevPost sync can correlate them.
   for (const submission of SAMPLE_SUBMISSIONS) {
     for (const member of submission.teamMembers) {
@@ -189,6 +190,7 @@ export async function runSeed() {
   console.log("Seed complete.");
   console.log("  Admin:       admin@spu.edu / admin123");
   console.log("  Judges:      judge1@spu.edu, judge2@spu.edu, judge3@spu.edu / judge123");
+  console.log("  Volunteer:   volunteer@spu.edu / helper123");
   console.log("  Participant: participant@spu.edu / demo1234 (team TransitPulse)");
 }
 

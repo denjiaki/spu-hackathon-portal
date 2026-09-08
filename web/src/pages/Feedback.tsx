@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import { Card, CardBody, CardHeader, EmptyState, Spinner } from "../components/ui";
-import type { FeedbackReview, RubricCriterion } from "../types";
+import type { FeedbackResponse } from "../types";
 
 export default function Feedback() {
-  const [data, setData] = useState<{ published: boolean; reviews: FeedbackReview[] } | null>(null);
-  const [rubric, setRubric] = useState<RubricCriterion[]>([]);
+  const [data, setData] = useState<FeedbackResponse | null>(null);
 
   useEffect(() => {
-    api<{ published: boolean; reviews: FeedbackReview[] }>("/participant/feedback").then(setData);
-    api<RubricCriterion[]>("/rubric").then(setRubric);
+    api<FeedbackResponse>("/participant/feedback").then(setData);
   }, []);
 
   if (data === null) return <Spinner />;
+  const rubric = data.rubric;
 
   const average = data.reviews.length
     ? Math.round((data.reviews.reduce((sum, review) => sum + review.total, 0) / data.reviews.length) * 10) / 10

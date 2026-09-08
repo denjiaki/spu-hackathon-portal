@@ -16,11 +16,12 @@ import Feedback from "./pages/Feedback";
 import JudgeRoutePage from "./pages/judge/JudgeRoute";
 import JudgeScan from "./pages/judge/JudgeScan";
 import JudgeScore from "./pages/judge/JudgeScore";
+import CheckIn from "./pages/CheckIn";
 import CommandCenter from "./pages/admin/CommandCenter";
-import CheckIn from "./pages/admin/CheckIn";
 import ScheduleAdmin from "./pages/admin/ScheduleAdmin";
 import AdminProjects from "./pages/admin/AdminProjects";
 import AdminScores from "./pages/admin/AdminScores";
+import AdminUsers from "./pages/admin/AdminUsers";
 
 function RequireRole({ roles, children }: { roles?: string[]; children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -52,11 +53,12 @@ function App() {
         <Route path="judge" element={<RequireRole roles={["judge", "admin"]}><JudgeRoutePage /></RequireRole>} />
         <Route path="judge/scan" element={<RequireRole roles={["judge", "admin"]}><JudgeScan /></RequireRole>} />
         <Route path="judge/score/:projectId" element={<RequireRole roles={["judge", "admin"]}><JudgeScore /></RequireRole>} />
+        <Route path="checkin" element={<RequireRole roles={["admin", "volunteer"]}><CheckIn /></RequireRole>} />
         <Route path="admin" element={<RequireRole roles={["admin"]}><CommandCenter /></RequireRole>} />
-        <Route path="admin/checkin" element={<RequireRole roles={["admin"]}><CheckIn /></RequireRole>} />
         <Route path="admin/schedule" element={<RequireRole roles={["admin"]}><ScheduleAdmin /></RequireRole>} />
         <Route path="admin/projects" element={<RequireRole roles={["admin"]}><AdminProjects /></RequireRole>} />
         <Route path="admin/scores" element={<RequireRole roles={["admin"]}><AdminScores /></RequireRole>} />
+        <Route path="admin/users" element={<RequireRole roles={["admin"]}><AdminUsers /></RequireRole>} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

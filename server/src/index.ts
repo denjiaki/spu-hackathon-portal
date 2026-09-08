@@ -81,7 +81,8 @@ api.get("/auth/me", (c) => {
 
 // ---------- Public / participant ----------
 
-api.get("/rubric", (c) => c.json(RUBRIC));
+// Rubric point values are internal to the judging team — not student-facing.
+api.get("/rubric", requireAuth("judge", "admin"), (c) => c.json(RUBRIC));
 
 api.get("/schedule", (c) => {
   const events = db.select().from(schema.scheduleEvents)
@@ -140,7 +141,44 @@ api.get("/participant/feedback", requireAuth(), (c) => {
       feedback: row.feedback,
     };
   });
-  return c.json({ published: reviews.length > 0, reviews });
+  // Ship the rubric alongside published feedback so teams can read their score
+  // sheets — the standalone rubric endpoint stays judges/admins-only.
+  return c.json({ published: reviews.length > 0, reviews, rubric: reviews.length > 0 ? RUBRIC : [] });
+});
+
+// ---------- Check-in station (admins and volunteers) ----------
+
+api.get("/checkin/users", requireAuth("admin", "volunteer"), (c) => {
+  const participants = db.select().from(schema.users)
+    .where(eq(schema.users.role, "participant")).all().map(publicUser);
+  return c.json(participants);
+});
+
+api.post("/checkin", requireAuth("admin", "volunteer"), async (c) => {
+  const body = z.object({
+    qrToken: z.string().min(1),
+    type: z.enum(["entry", "meal", "swag"]),
+  }).safeParse(await c.req.json());
+  if (!body.success) return c.json({ error: "Invalid check-in" }, 400);
+
+  const user = db.select().from(schema.users).where(eq(schema.users.qrToken, body.data.qrToken)).get();
+  if (!user) return c.json({ error: "Unrecognized badge code" }, 404);
+
+  const priorSameType = db.select().from(schema.eventCheckins)
+    .where(sql`${schema.eventCheckins.userId} = ${user.id} and ${schema.eventCheckins.checkInType} = ${body.data.type}`)
+    .all();
+  // Meals repeat across the weekend; entry and swag should only happen once.
+  const duplicate = body.data.type !== "meal" && priorSameType.length > 0;
+  if (!duplicate) {
+    db.insert(schema.eventCheckins).values({
+      id: newId(),
+      userId: user.id,
+      checkInType: body.data.type,
+      timestamp: new Date().toISOString(),
+      scannedBy: c.get("user").id,
+    }).run();
+  }
+  return c.json({ userName: user.name, role: user.role, duplicate });
 });
 
 // ---------- Judge ----------

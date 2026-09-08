@@ -107,40 +107,13 @@ admin.get("/users", (c) => {
 });
 
 admin.post("/users/:id/role", async (c) => {
-  const body = z.object({ role: z.enum(["participant", "judge", "admin"]) }).safeParse(await c.req.json());
+  const body = z.object({ role: z.enum(["participant", "judge", "volunteer", "admin"]) }).safeParse(await c.req.json());
   if (!body.success) return c.json({ error: "Invalid role" }, 400);
   db.update(schema.users).set({ role: body.data.role }).where(eq(schema.users.id, c.req.param("id"))).run();
   return c.json({ ok: true });
 });
 
-// ---------- Universal event check-in (badge QR scan) ----------
-
-admin.post("/checkin", async (c) => {
-  const body = z.object({
-    qrToken: z.string().min(1),
-    type: z.enum(["entry", "meal", "swag"]),
-  }).safeParse(await c.req.json());
-  if (!body.success) return c.json({ error: "Invalid check-in" }, 400);
-
-  const user = db.select().from(schema.users).where(eq(schema.users.qrToken, body.data.qrToken)).get();
-  if (!user) return c.json({ error: "Unrecognized badge code" }, 404);
-
-  const priorSameType = db.select().from(schema.eventCheckins)
-    .where(sql`${schema.eventCheckins.userId} = ${user.id} and ${schema.eventCheckins.checkInType} = ${body.data.type}`)
-    .all();
-  // Meals repeat across the weekend; entry and swag should only happen once.
-  const duplicate = body.data.type !== "meal" && priorSameType.length > 0;
-  if (!duplicate) {
-    db.insert(schema.eventCheckins).values({
-      id: newId(),
-      userId: user.id,
-      checkInType: body.data.type,
-      timestamp: new Date().toISOString(),
-      scannedBy: c.get("user").id,
-    }).run();
-  }
-  return c.json({ userName: user.name, role: user.role, duplicate });
-});
+// Event check-in moved to /api/checkin (shared with the volunteer role).
 
 // ---------- Tables ----------
 

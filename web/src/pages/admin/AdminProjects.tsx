@@ -170,16 +170,22 @@ export default function AdminProjects() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4"
           onClick={() => setQrTable(null)}
         >
-          <div className="rounded-2xl bg-white p-8 text-center" onClick={(e) => e.stopPropagation()}>
+          <div className="qr-print-area rounded-2xl bg-white p-8 text-center" onClick={(e) => e.stopPropagation()}>
             <h2 className="font-display text-2xl font-bold text-maroon-700">Table {qrTable.tableNumber}</h2>
             <p className="text-sm text-ink/60">{qrTable.projectTitle} · {qrTable.zoneName}</p>
             <div className="mx-auto mt-4 w-fit rounded-xl border-8 border-maroon-700 p-3">
               <QRCodeSVG value={qrTable.qrToken} size={220} fgColor="#3e2b2e" />
             </div>
-            <p className="mt-3 max-w-xs text-xs text-ink/50">
-              Print this and place it on the table tent. Judges scan it to log their route check-in.
+            {/* Manual-entry fallback for judges when a camera won't cooperate */}
+            <p className="mt-3 font-mono text-sm font-semibold tracking-tight text-ink">{qrTable.qrToken}</p>
+            <p className="mt-2 max-w-xs text-xs text-ink/50">
+              Print this and place it on the table tent. Judges scan the QR — or type the code
+              above — to log their route check-in.
             </p>
-            <Button className="mt-4" onClick={() => setQrTable(null)}>Close</Button>
+            <div className="mt-4 flex justify-center gap-2 print:hidden">
+              <Button onClick={() => window.print()}>🖨 Print</Button>
+              <Button variant="outline" onClick={() => setQrTable(null)}>Close</Button>
+            </div>
           </div>
         </div>
       )}

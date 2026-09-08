@@ -26,6 +26,7 @@ export default function Layout() {
 
   const isJudge = user.role === "judge" || user.role === "admin";
   const isAdmin = user.role === "admin";
+  const canCheckIn = isAdmin || user.role === "volunteer";
 
   return (
     <div className="min-h-screen">
@@ -48,13 +49,14 @@ export default function Layout() {
                 <NavLink to="/app/judge/scan" className={linkClass}>Scan</NavLink>
               </>
             )}
+            {canCheckIn && <NavLink to="/app/checkin" className={linkClass}>Check-In</NavLink>}
             {isAdmin && (
               <>
                 <NavLink to="/app/admin" end className={linkClass}>Command Center</NavLink>
-                <NavLink to="/app/admin/checkin" className={linkClass}>Check-In</NavLink>
                 <NavLink to="/app/admin/schedule" className={linkClass}>Schedule Mgmt</NavLink>
                 <NavLink to="/app/admin/projects" className={linkClass}>Projects & Tables</NavLink>
                 <NavLink to="/app/admin/scores" className={linkClass}>Scores</NavLink>
+                <NavLink to="/app/admin/users" className={linkClass}>Users</NavLink>
               </>
             )}
           </nav>

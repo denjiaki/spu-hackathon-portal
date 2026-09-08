@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
 import { api } from "../api";
 import { useAuth } from "../auth";
@@ -60,14 +61,31 @@ export default function Dashboard() {
       </div>
 
       <div className="space-y-6">
+        {user.role === "volunteer" && (
+          <Card>
+            <CardBody className="text-center">
+              <p className="text-3xl">🙌</p>
+              <h2 className="mt-1 font-display text-lg font-bold text-maroon-700">You're on the volunteer crew</h2>
+              <p className="mt-1 text-sm text-ink/70">Run the doors, meals, and swag tables.</p>
+              <Link
+                to="/app/checkin"
+                className="mt-3 inline-block rounded-md bg-maroon-700 px-4 py-2 text-sm font-bold text-white hover:bg-maroon-800"
+              >
+                Open check-in station →
+              </Link>
+            </CardBody>
+          </Card>
+        )}
         <Card>
           <CardHeader title="My badge" subtitle="Show this QR code at check-in, meals, and swag pickup" />
           <CardBody className="flex flex-col items-center gap-3">
             <div className="rounded-xl border-8 border-maroon-700 bg-white p-3">
               <QRCodeSVG value={user.qrToken} size={180} fgColor="#3e2b2e" />
             </div>
+            <p className="font-mono text-xs font-semibold text-ink/70">{user.qrToken}</p>
             <p className="text-center text-xs text-ink/60">
-              Unique to you — treat it like your event ticket.
+              Unique to you — treat it like your event ticket. The code above works for manual
+              entry if scanning fails.
             </p>
           </CardBody>
         </Card>

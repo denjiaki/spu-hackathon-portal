@@ -1,4 +1,4 @@
-export type Role = "participant" | "judge" | "admin";
+export type Role = "participant" | "judge" | "volunteer" | "admin";
 
 export interface User {
   id: string;
@@ -78,6 +78,12 @@ export interface FeedbackReview {
   scores: Record<string, number>;
   total: number;
   feedback: string | null;
+}
+
+export interface FeedbackResponse {
+  published: boolean;
+  reviews: FeedbackReview[];
+  rubric: RubricCriterion[];
 }
 
 export interface AdminMetrics {

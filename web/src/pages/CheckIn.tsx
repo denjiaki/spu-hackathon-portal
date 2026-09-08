@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { api } from "../../api";
-import QrScanner from "../../components/QrScanner";
-import { Button, Card, CardBody, CardHeader, ErrorNote, Input, Select } from "../../components/ui";
-import type { User } from "../../types";
+import { api } from "../api";
+import QrScanner from "../components/QrScanner";
+import { Button, Card, CardBody, CardHeader, ErrorNote, Input, Select } from "../components/ui";
+import type { User } from "../types";
 
 type CheckInType = "entry" | "meal" | "swag";
 
@@ -22,7 +22,7 @@ export default function CheckIn() {
   const busyRef = useRef(false);
 
   useEffect(() => {
-    api<User[]>("/admin/users").then(setUsers);
+    api<User[]>("/checkin/users").then(setUsers).catch(() => {});
   }, []);
 
   const submit = async (qrToken: string) => {
@@ -30,7 +30,7 @@ export default function CheckIn() {
     busyRef.current = true;
     setError(null);
     try {
-      const res = await api<CheckInResult>("/admin/checkin", { method: "POST", body: { qrToken, type } });
+      const res = await api<CheckInResult>("/checkin", { method: "POST", body: { qrToken, type } });
       setResult(res);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Check-in failed");
@@ -97,7 +97,7 @@ export default function CheckIn() {
           <div className="flex gap-2">
             <Select value={simUser} onChange={(e) => setSimUser(e.target.value)}>
               <option value="">Select attendee…</option>
-              {users.filter((u) => u.role === "participant").map((u) => (
+              {users.map((u) => (
                 <option key={u.id} value={u.qrToken}>{u.name} ({u.email})</option>
               ))}
             </Select>
