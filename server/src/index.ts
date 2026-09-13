@@ -81,8 +81,13 @@ api.get("/auth/me", (c) => {
 
 // ---------- Public / participant ----------
 
-// Rubric point values are internal to the judging team — not student-facing.
-api.get("/rubric", requireAuth("judge", "admin"), (c) => c.json(RUBRIC));
+// The rubric criteria are public; the point WEIGHTS are internal to the
+// judging team, so `max` is stripped unless a judge/admin session asks.
+api.get("/rubric", (c) => {
+  const user = getSessionUser(c);
+  const seesWeights = user !== null && (user.role === "judge" || user.role === "admin");
+  return c.json(seesWeights ? RUBRIC : RUBRIC.map(({ max, ...criterion }) => criterion));
+});
 
 api.get("/schedule", (c) => {
   const events = db.select().from(schema.scheduleEvents)
