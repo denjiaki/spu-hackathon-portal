@@ -24,6 +24,7 @@ Open http://localhost:5173.
 | Judge       | judge2@spu.edu      | judge123  | Route just started                 |
 | Judge       | judge3@spu.edu      | judge123  | Fresh route                        |
 | Volunteer   | volunteer@spu.edu   | helper123 | Check-in station access only       |
+| Speaker     | speaker@sponsor.dev | speak1234 | Guest speaker, owns a workshop     |
 | Participant | participant@spu.edu | demo1234  | On team "TransitPulse", table 1    |
 
 Re-run `npm run seed` any time to reset to this state (do it right before the presentation).
@@ -66,6 +67,32 @@ Re-run `npm run seed` any time to reset to this state (do it right before the pr
   to portal accounts by email.
 - **SPU branding (Appendix A)** — Legacy Maroon `#651D32`, Falcon Red `#BA202E`, PMS 7501
   sand, serif display / Arial body stacks, WCAG-conscious contrast.
+
+## Microsoft Entra sign-in (SPU SSO)
+
+The portal has a complete Entra ID (Azure AD) sign-in flow built in — the "Sign in with
+SPU Microsoft" button activates automatically once these environment variables are set:
+
+| Variable | Value |
+|----------|-------|
+| `MS_CLIENT_ID` | Application (client) ID from the Azure app registration |
+| `MS_CLIENT_SECRET` | A client secret from that registration |
+| `MS_TENANT_ID` | SPU's tenant ID (or `spu.edu`); defaults to `organizations` |
+| `MS_ALLOWED_DOMAIN` | Defaults to `spu.edu` — non-SPU accounts are rejected |
+| `MS_REDIRECT_URI` | Only needed if auto-detection is wrong |
+
+**To get the app registration** (ask SPU CIS, or use any Azure account for testing):
+
+1. Azure Portal → Microsoft Entra ID → App registrations → New registration.
+2. Name: "SPU Hackathon Portal". Supported account types: single tenant (SPU only).
+3. Redirect URI (Web): `https://<your-domain>/api/auth/microsoft/callback` — add
+   `http://localhost:8787/api/auth/microsoft/callback` for local development.
+4. Certificates & secrets → New client secret; copy the **value** immediately.
+5. Set the variables: locally in the shell, or `heroku config:set MS_CLIENT_ID=... MS_CLIENT_SECRET=... MS_TENANT_ID=...`
+
+First-time Entra sign-ins auto-create a participant account linked by email; admins can
+then promote them on the Users page. Accounts created via SSO have no password — they can
+only sign in through Microsoft.
 
 ## Deviations from the spec (and why)
 

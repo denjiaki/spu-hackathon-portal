@@ -53,6 +53,7 @@ const eventSchema = z.object({
   startTime: z.string().min(1),
   endTime: z.string().optional(),
   location: z.string().optional(),
+  speakerUserId: z.string().nullable().optional(),
 });
 
 admin.post("/schedule", async (c) => {
@@ -107,7 +108,7 @@ admin.get("/users", (c) => {
 });
 
 admin.post("/users/:id/role", async (c) => {
-  const body = z.object({ role: z.enum(["participant", "judge", "volunteer", "admin"]) }).safeParse(await c.req.json());
+  const body = z.object({ role: z.enum(["participant", "judge", "volunteer", "speaker", "admin"]) }).safeParse(await c.req.json());
   if (!body.success) return c.json({ error: "Invalid role" }, 400);
   db.update(schema.users).set({ role: body.data.role }).where(eq(schema.users.id, c.req.param("id"))).run();
   return c.json({ ok: true });

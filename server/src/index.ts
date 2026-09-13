@@ -12,6 +12,7 @@ import {
   newId, publicUser, requireAuth, verifyPassword,
 } from "./auth.js";
 import { admin } from "./admin.js";
+import { handleMicrosoftCallback, microsoftEnabled, startMicrosoftLogin } from "./microsoft.js";
 import { RUBRIC, totalScore, validateScores } from "./rubric.js";
 import { runSeed } from "./seed.js";
 
@@ -79,6 +80,19 @@ api.get("/auth/me", (c) => {
   return user ? c.json(publicUser(user)) : c.json(null);
 });
 
+// Which sign-in methods are live (drives the login screen's buttons).
+api.get("/auth/providers", (c) => c.json({ microsoft: microsoftEnabled, github: false }));
+
+api.get("/auth/microsoft", (c) => {
+  if (!microsoftEnabled) return c.json({ error: "Microsoft sign-in is not configured" }, 503);
+  return startMicrosoftLogin(c);
+});
+
+api.get("/auth/microsoft/callback", (c) => {
+  if (!microsoftEnabled) return c.json({ error: "Microsoft sign-in is not configured" }, 503);
+  return handleMicrosoftCallback(c);
+});
+
 // ---------- Public / participant ----------
 
 // The rubric criteria are public; the point WEIGHTS are internal to the
@@ -92,7 +106,12 @@ api.get("/rubric", (c) => {
 api.get("/schedule", (c) => {
   const events = db.select().from(schema.scheduleEvents)
     .orderBy(schema.scheduleEvents.startTime).all();
-  return c.json(events);
+  return c.json(events.map((event) => {
+    const speaker = event.speakerUserId
+      ? db.select().from(schema.users).where(eq(schema.users.id, event.speakerUserId)).get()
+      : undefined;
+    return { ...event, speakerName: speaker?.name ?? null };
+  }));
 });
 
 api.get("/announcements", (c) => {
@@ -184,6 +203,32 @@ api.post("/checkin", requireAuth("admin", "volunteer"), async (c) => {
     }).run();
   }
   return c.json({ userName: user.name, role: user.role, duplicate });
+});
+
+// ---------- Guest speakers ----------
+
+api.get("/speaker/sessions", requireAuth("speaker", "admin"), (c) => {
+  const user = c.get("user");
+  const sessions = db.select().from(schema.scheduleEvents)
+    .where(eq(schema.scheduleEvents.speakerUserId, user.id))
+    .orderBy(schema.scheduleEvents.startTime).all();
+  return c.json(sessions);
+});
+
+// Speakers own their session blurb; time/location/title stay with the organizers.
+api.put("/speaker/sessions/:id", requireAuth("speaker", "admin"), async (c) => {
+  const user = c.get("user");
+  const body = z.object({ description: z.string().max(1000) }).safeParse(await c.req.json());
+  if (!body.success) return c.json({ error: "Description too long (1000 chars max)" }, 400);
+  const sessionId = c.req.param("id") ?? "";
+  const session = db.select().from(schema.scheduleEvents)
+    .where(eq(schema.scheduleEvents.id, sessionId)).get();
+  if (!session || session.speakerUserId !== user.id) {
+    return c.json({ error: "That session is not assigned to you" }, 403);
+  }
+  db.update(schema.scheduleEvents).set({ description: body.data.description })
+    .where(eq(schema.scheduleEvents.id, session.id)).run();
+  return c.json({ ok: true });
 });
 
 // ---------- Judge ----------

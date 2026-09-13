@@ -61,6 +61,21 @@ export default function Dashboard() {
       </div>
 
       <div className="space-y-6">
+        {user.role === "speaker" && (
+          <Card>
+            <CardBody className="text-center">
+              <p className="text-3xl">🎤</p>
+              <h2 className="mt-1 font-display text-lg font-bold text-maroon-700">You're a guest speaker</h2>
+              <p className="mt-1 text-sm text-ink/70">Review your sessions and polish your description.</p>
+              <Link
+                to="/app/speaker"
+                className="mt-3 inline-block rounded-md bg-maroon-700 px-4 py-2 text-sm font-bold text-white hover:bg-maroon-800"
+              >
+                My sessions →
+              </Link>
+            </CardBody>
+          </Card>
+        )}
         {user.role === "volunteer" && (
           <Card>
             <CardBody className="text-center">

@@ -1,4 +1,4 @@
-export type Role = "participant" | "judge" | "volunteer" | "admin";
+export type Role = "participant" | "judge" | "volunteer" | "speaker" | "admin";
 
 export interface User {
   id: string;
@@ -17,6 +17,8 @@ export interface ScheduleEvent {
   startTime: string;
   endTime: string | null;
   location: string | null;
+  speakerUserId: string | null;
+  speakerName: string | null;
 }
 
 export interface Announcement {

@@ -17,6 +17,7 @@ import JudgeRoutePage from "./pages/judge/JudgeRoute";
 import JudgeScan from "./pages/judge/JudgeScan";
 import JudgeScore from "./pages/judge/JudgeScore";
 import CheckIn from "./pages/CheckIn";
+import SpeakerSessions from "./pages/SpeakerSessions";
 import CommandCenter from "./pages/admin/CommandCenter";
 import ScheduleAdmin from "./pages/admin/ScheduleAdmin";
 import AdminProjects from "./pages/admin/AdminProjects";
@@ -54,6 +55,7 @@ function App() {
         <Route path="judge/scan" element={<RequireRole roles={["judge", "admin"]}><JudgeScan /></RequireRole>} />
         <Route path="judge/score/:projectId" element={<RequireRole roles={["judge", "admin"]}><JudgeScore /></RequireRole>} />
         <Route path="checkin" element={<RequireRole roles={["admin", "volunteer"]}><CheckIn /></RequireRole>} />
+        <Route path="speaker" element={<RequireRole roles={["admin", "speaker"]}><SpeakerSessions /></RequireRole>} />
         <Route path="admin" element={<RequireRole roles={["admin"]}><CommandCenter /></RequireRole>} />
         <Route path="admin/schedule" element={<RequireRole roles={["admin"]}><ScheduleAdmin /></RequireRole>} />
         <Route path="admin/projects" element={<RequireRole roles={["admin"]}><AdminProjects /></RequireRole>} />

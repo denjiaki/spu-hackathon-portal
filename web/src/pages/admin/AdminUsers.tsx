@@ -4,11 +4,12 @@ import { useAuth } from "../../auth";
 import { Badge, Card, CardBody, CardHeader, ErrorNote, Input, Select, Spinner } from "../../components/ui";
 import type { Role, User } from "../../types";
 
-const ROLES: Role[] = ["participant", "judge", "volunteer", "admin"];
-const roleColors: Record<Role, "gray" | "maroon" | "sand" | "red"> = {
+const ROLES: Role[] = ["participant", "judge", "volunteer", "speaker", "admin"];
+const roleColors: Record<Role, "gray" | "maroon" | "sand" | "red" | "green"> = {
   participant: "gray",
   judge: "maroon",
   volunteer: "sand",
+  speaker: "green",
   admin: "red",
 };
 
@@ -45,7 +46,7 @@ export default function AdminUsers() {
       <Card>
         <CardHeader
           title={`${users.length} accounts`}
-          subtitle="Grant judge, volunteer, or admin access. Volunteers can run check-in stations; judges get routes and scoring."
+          subtitle="Grant judge, volunteer, speaker, or admin access. Volunteers run check-in stations; judges get routes and scoring; speakers manage their session descriptions."
           actions={<Input className="w-56" placeholder="Search name or email…" value={filter} onChange={(e) => setFilter(e.target.value)} />}
         />
         <CardBody className="p-0">

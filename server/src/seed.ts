@@ -38,6 +38,10 @@ export async function runSeed() {
     addUser("judge3@spu.edu", "Sarah Ellison '24", "judge", "judge123"),
   ];
   addUser("volunteer@spu.edu", "Riley Nakamura", "volunteer", "helper123");
+  const speakerIds = [
+    addUser("speaker@sponsor.dev", "Casey Morgan (TechCorp)", "speaker", "speak1234"),
+    addUser("speaker2@sponsor.dev", "Jamie Okafor (LaunchPad)", "speaker", "speak1234"),
+  ];
   // One account per fixture team member so DevPost sync can correlate them.
   for (const submission of SAMPLE_SUBMISSIONS) {
     for (const member of submission.teamMembers) {
@@ -59,7 +63,12 @@ export async function runSeed() {
     ["Awards Ceremony", "Winners of the Proposal and Prototype tracks are crowned.", "OMH 109", "2026-10-18T17:30", "2026-10-18T18:30"],
   ];
   for (const [title, description, location, startTime, endTime] of events) {
-    db.insert(schema.scheduleEvents).values({ id: newId(), title, description, location, startTime, endTime }).run();
+    // Sponsor workshops are presented by the seeded guest speakers.
+    const speakerUserId =
+      title.includes("Shipping Fast") ? speakerIds[0]
+      : title.includes("Pitching to Non-Engineers") ? speakerIds[1]
+      : null;
+    db.insert(schema.scheduleEvents).values({ id: newId(), title, description, location, startTime, endTime, speakerUserId }).run();
   }
 
   // ---------- Announcements ----------
@@ -191,6 +200,7 @@ export async function runSeed() {
   console.log("  Admin:       admin@spu.edu / admin123");
   console.log("  Judges:      judge1@spu.edu, judge2@spu.edu, judge3@spu.edu / judge123");
   console.log("  Volunteer:   volunteer@spu.edu / helper123");
+  console.log("  Speakers:    speaker@sponsor.dev, speaker2@sponsor.dev / speak1234");
   console.log("  Participant: participant@spu.edu / demo1234 (team TransitPulse)");
 }
 

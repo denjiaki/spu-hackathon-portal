@@ -34,6 +34,9 @@ export default function Schedule() {
                   </div>
                   <div>
                     <p className="font-semibold">{event.title}</p>
+                    {event.speakerName && (
+                      <p className="mt-0.5 text-xs font-semibold text-maroon-700">🎤 Presented by {event.speakerName}</p>
+                    )}
                     {event.description && <p className="mt-0.5 text-sm text-ink/70">{event.description}</p>}
                     {event.location && <p className="mt-1 text-xs font-semibold text-falcon">📍 {event.location}</p>}
                   </div>

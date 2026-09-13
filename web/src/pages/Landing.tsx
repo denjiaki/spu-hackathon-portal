@@ -97,7 +97,11 @@ export default function Landing() {
                       <span className="w-20 shrink-0 text-sm font-bold text-maroon-700">{formatTime(event.startTime)}</span>
                       <div>
                         <p className="text-sm font-semibold">{event.title}</p>
-                        {event.location && <p className="text-xs text-ink/60">{event.location}</p>}
+                        <p className="text-xs text-ink/60">
+                          {event.speakerName && <>🎤 {event.speakerName}</>}
+                          {event.speakerName && event.location && " · "}
+                          {event.location}
+                        </p>
                       </div>
                     </li>
                   ))}

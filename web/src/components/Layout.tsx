@@ -49,6 +49,9 @@ export default function Layout() {
                 <NavLink to="/app/judge/scan" className={linkClass}>Scan</NavLink>
               </>
             )}
+            {(user.role === "speaker" || isAdmin) && (
+              <NavLink to="/app/speaker" className={linkClass}>My Sessions</NavLink>
+            )}
             {canCheckIn && <NavLink to="/app/checkin" className={linkClass}>Check-In</NavLink>}
             {isAdmin && (
               <>

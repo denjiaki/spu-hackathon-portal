@@ -45,7 +45,8 @@ CREATE TABLE IF NOT EXISTS schedule_events (
   description TEXT,
   start_time TEXT NOT NULL,
   end_time TEXT,
-  location TEXT
+  location TEXT,
+  speaker_user_id TEXT
 );
 CREATE TABLE IF NOT EXISTS event_checkins (
   id TEXT PRIMARY KEY,
@@ -92,6 +93,9 @@ CREATE TABLE IF NOT EXISTS settings (
   value TEXT NOT NULL
 );
 `);
+
+// Lightweight migrations for databases created before a column existed.
+try { sqlite.exec("ALTER TABLE schedule_events ADD COLUMN speaker_user_id TEXT"); } catch { /* already there */ }
 
 export const db = drizzle(sqlite, { schema });
 export { schema };

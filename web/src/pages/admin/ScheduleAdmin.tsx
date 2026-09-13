@@ -1,18 +1,22 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { api } from "../../api";
-import { Button, Card, CardBody, CardHeader, ErrorNote, formatDateTime, Input, Label, Spinner } from "../../components/ui";
-import type { ScheduleEvent } from "../../types";
+import { Button, Card, CardBody, CardHeader, ErrorNote, formatDateTime, Input, Label, Select, Spinner } from "../../components/ui";
+import type { ScheduleEvent, User } from "../../types";
 
-const blank = { title: "", description: "", location: "", startTime: "", endTime: "" };
+const blank = { title: "", description: "", location: "", startTime: "", endTime: "", speakerUserId: "" };
 
 export default function ScheduleAdmin() {
   const [events, setEvents] = useState<ScheduleEvent[] | null>(null);
+  const [speakers, setSpeakers] = useState<User[]>([]);
   const [form, setForm] = useState(blank);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const load = () => api<ScheduleEvent[]>("/schedule").then(setEvents);
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    api<User[]>("/admin/users").then((users) => setSpeakers(users.filter((u) => u.role === "speaker")));
+  }, []);
 
   if (events === null) return <Spinner />;
 
@@ -25,6 +29,7 @@ export default function ScheduleAdmin() {
       location: form.location || undefined,
       startTime: form.startTime,
       endTime: form.endTime || undefined,
+      speakerUserId: form.speakerUserId || null,
     };
     try {
       if (editingId) {
@@ -48,6 +53,7 @@ export default function ScheduleAdmin() {
       location: event.location ?? "",
       startTime: event.startTime,
       endTime: event.endTime ?? "",
+      speakerUserId: event.speakerUserId ?? "",
     });
   };
 
@@ -79,6 +85,22 @@ export default function ScheduleAdmin() {
               <div>
                 <Label htmlFor="ev-end">Ends</Label>
                 <Input id="ev-end" type="datetime-local" value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} />
+              </div>
+              <div>
+                <Label htmlFor="ev-speaker">Guest speaker (optional)</Label>
+                <Select
+                  id="ev-speaker"
+                  value={form.speakerUserId}
+                  onChange={(e) => setForm({ ...form, speakerUserId: e.target.value })}
+                >
+                  <option value="">— none —</option>
+                  {speakers.map((speaker) => (
+                    <option key={speaker.id} value={speaker.id}>{speaker.name}</option>
+                  ))}
+                </Select>
+                <p className="mt-1 text-xs text-ink/50">
+                  Grant the speaker role on the Users page first; speakers edit their own session description.
+                </p>
               </div>
               <ErrorNote message={error} />
               <div className="flex gap-2">

@@ -40,6 +40,7 @@ export const scheduleEvents = sqliteTable("schedule_events", {
   startTime: text("start_time").notNull(),
   endTime: text("end_time"),
   location: text("location"),
+  speakerUserId: text("speaker_user_id"), // guest speaker presenting this session
 });
 
 export const eventCheckins = sqliteTable("event_checkins", {
