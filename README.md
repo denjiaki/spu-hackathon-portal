@@ -58,6 +58,10 @@ Re-run `npm run seed` any time to reset to this state (do it right before the pr
   route generation, users/roles).
 - **Universal QR check-in** — every user gets a badge QR; admins scan for entry/meal/swag
   with duplicate protection. Tables get printable QRs for judge route tracking.
+- **QR self-registration** — the landing page shows a QR pointing at `/join`, a
+  mobile-first sign-up where students choose to compete or volunteer (via SPU Microsoft
+  sign-in when configured, or email/password). Self-service is capped at those two roles;
+  judge/speaker/admin are always granted by an admin.
 - **Spatial judge routing** — one click generates staggered full-coverage routes so every
   judge can score every project (the spec's fairness ideal) without clustering.
 - **Score publishing** — asynchronous release toggle; participants see anonymized

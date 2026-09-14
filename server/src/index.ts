@@ -36,6 +36,8 @@ api.post("/auth/register", async (c) => {
     email: z.string().email(),
     name: z.string().min(1),
     password: z.string().min(8),
+    // Self-service sign-up may choose to hack or to help; staff roles are admin-granted.
+    role: z.enum(["participant", "volunteer"]).default("participant"),
   }).safeParse(await c.req.json());
   if (!body.success) return c.json({ error: "Provide a valid email, name, and a password of 8+ characters" }, 400);
 
@@ -49,7 +51,7 @@ api.post("/auth/register", async (c) => {
     email,
     name: body.data.name,
     passwordHash: hashPassword(body.data.password),
-    role: "participant",
+    role: body.data.role,
     qrToken: newId(),
     createdAt: new Date().toISOString(),
   }).run();

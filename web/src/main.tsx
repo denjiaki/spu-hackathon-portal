@@ -8,6 +8,7 @@ import { Spinner } from "./components/ui";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Join from "./pages/Join";
 import Dashboard from "./pages/Dashboard";
 import Schedule from "./pages/Schedule";
 import Projects from "./pages/Projects";
@@ -38,6 +39,7 @@ function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/join" element={<Join />} />
       <Route
         path="/app"
         element={

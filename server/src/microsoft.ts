@@ -28,6 +28,7 @@ const config = {
 export const microsoftEnabled = Boolean(config.clientId && config.clientSecret);
 
 const STATE_COOKIE = "spuhack_oauth_state";
+const JOIN_ROLE_COOKIE = "spuhack_join_role"; // desired role carried across the OAuth round-trip
 
 function authority(): string {
   return `https://login.microsoftonline.com/${config.tenant}`;
@@ -55,6 +56,14 @@ export function startMicrosoftLogin(c: Context): Response {
   setCookie(c, STATE_COOKIE, state, {
     httpOnly: true, sameSite: "Lax", path: "/", maxAge: 600,
   });
+  // The QR join page lets people sign up as participant or volunteer; remember
+  // the choice for when the callback creates their account.
+  const desiredRole = c.req.query("role");
+  if (desiredRole === "participant" || desiredRole === "volunteer") {
+    setCookie(c, JOIN_ROLE_COOKIE, desiredRole, {
+      httpOnly: true, sameSite: "Lax", path: "/", maxAge: 600,
+    });
+  }
   const params = new URLSearchParams({
     client_id: config.clientId,
     response_type: "code",
@@ -115,7 +124,10 @@ export async function handleMicrosoftCallback(c: Context): Promise<Response> {
     return fail(`Please sign in with your @${config.allowedDomain} account`);
   }
 
-  // Link by email; first sign-in creates a participant account.
+  // Link by email; first sign-in creates the account. Existing accounts keep
+  // their role — the join-page choice only applies to brand-new users.
+  const joinRole = getCookie(c, JOIN_ROLE_COOKIE);
+  deleteCookie(c, JOIN_ROLE_COOKIE, { path: "/" });
   let user = db.select().from(schema.users).where(eq(schema.users.email, email)).get();
   if (!user) {
     const id = newId();
@@ -124,7 +136,7 @@ export async function handleMicrosoftCallback(c: Context): Promise<Response> {
       email,
       name: profile.name ?? email.split("@")[0],
       passwordHash: "!sso", // never matches scrypt output — password login stays off
-      role: "participant",
+      role: joinRole === "volunteer" ? "volunteer" : "participant",
       qrToken: newId(),
       createdAt: new Date().toISOString(),
     }).run();

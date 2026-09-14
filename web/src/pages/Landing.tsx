@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { QRCodeSVG } from "qrcode.react";
 import { api } from "../api";
 import { useAuth } from "../auth";
 import { Wordmark } from "../components/Layout";
@@ -80,6 +81,26 @@ export default function Landing() {
               a software application, mechanical assembly, or hardware mock-up that demonstrates
               a tangible solution.
             </p>
+          </CardBody>
+        </Card>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pt-10">
+        <Card>
+          <CardBody className="flex flex-col items-center gap-6 sm:flex-row sm:justify-center">
+            <div className="shrink-0 rounded-xl border-8 border-maroon-700 bg-white p-3">
+              <QRCodeSVG value={`${window.location.origin}/join`} size={150} fgColor="#3e2b2e" />
+            </div>
+            <div className="max-w-md text-center sm:text-left">
+              <h2 className="font-display text-2xl font-bold text-maroon-700">Registration is open!</h2>
+              <p className="mt-1 text-sm text-ink/75">
+                Scan with your phone to sign up — compete on a team, or volunteer to help run
+                the event. Takes about a minute.
+              </p>
+              <p className="mt-2 text-xs text-ink/50">
+                No camera handy? Go to <Link to="/join" className="font-semibold text-falcon hover:underline">{window.location.host}/join</Link>
+              </p>
+            </div>
           </CardBody>
         </Card>
       </section>
